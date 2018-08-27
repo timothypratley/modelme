@@ -1,0 +1,9 @@
+{:main modelme.app
+ :extra-main-files {:tests {:main modelme.test-runner}
+                    :devcards {:main modelme.devcards}}
+ :optimizations :none
+ :output-to "resources/public/js/compiled/dev.js"
+ :output-dir "resources/public/js/compiled/out/dev"
+ :asset-path "js/compiled/out/dev"
+ :source-map-timestamp true
+ :preloads [devtools.preload]}

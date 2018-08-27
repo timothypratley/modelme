@@ -1,0 +1,5 @@
+{:output-to "resources/public/js/compiled/modelme.js"
+ :main modelme.app
+ :optimizations :advanced
+ :infer-externs true
+ :pretty-print false}

@@ -1,16 +1,16 @@
 (ns modelme.view.projection
-  (:require [modelme.view.chart :as chart]))
-
-(defn group-data [& names]
-  (apply concat (for [n names]
-                  (map-indexed (fn [i x] {:x i :y x :col n}) (take 20 (repeatedly #(rand-int 100)))))))
+  (:require [modelme.view.chart :as chart]
+            [modelme.model :as model]))
 
 (def line-plot
-  {:data {:values (group-data "monkey" "slipper" "broom")}
-   :encoding {:x {:field "x"}
-              :y {:field "y"}
+  {:data {:values (model/calc-schedule)}
+   :encoding {:x {:field "t"}
+              :y {:field "fat"}
               :color {:field "col" :type "nominal"}}
    :mark "line"})
+
+(prn
+  (model/calc-schedule))
 
 (defn projection-view []
   [chart/vega-lite line-plot])
