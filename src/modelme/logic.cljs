@@ -95,7 +95,7 @@
 
 (defn update-nutrients [me {:keys [insulin-effect carb-effect protein-effect fat-effect]}]
   (-> me
-      (update me :insulin-g safe-add (or insulin-effect -0.5))
+      (update :insulin-g safe-add (or insulin-effect -0.5))
       (update :carbs + (or carb-effect -1.0))
       (update :proteins + (or protein-effect -1.0))
       (update :fats + (or fat-effect -1.0))))

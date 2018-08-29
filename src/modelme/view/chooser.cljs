@@ -1,11 +1,12 @@
 (ns modelme.view.chooser
   (:require [modelme.logic :as logic]
             [modelme.model :as model]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [soda-ash.core :as sa]))
 
 (defn choose-between
   "Making a choice may open up further sub-choices, or reach a leaf choice."
-  [children time-slot selection on-result]
+  [children selection on-result]
   (into
     [sa/ModalActions]
     (map-indexed
@@ -16,7 +17,6 @@
           (fn choice-click [e]
             (swap! selection conj idx)
             (when (empty? (:children (logic/get-in-activities @selection)))
-              (model/add-activity! @time-slot activity)
               (on-result activity)))}
          tag])
       children)))
