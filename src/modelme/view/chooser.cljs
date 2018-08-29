@@ -27,7 +27,7 @@
         (number? a) (+ a b)
         (map? a) (merge a b)
         :else (throw (ex-info (str "Don't know how to merge '"
-                                   (type a) "' with '" (type b) "'")
+                                   a "' with '" b "'")
                               {:a a
                                :b b}))))
 
@@ -55,7 +55,8 @@
                                    choice-index)]
                   [sa/Button
                    {:size "massive"
-                    :highlight selected?
+                    :toggle true
+                    :active selected?
                     :on-click
                     (fn choose-one [e]
                       (swap! selected-categories assoc category-index choice-index)
@@ -71,7 +72,7 @@
                                            (get k)
                                            (:children)
                                            (get v)
-                                           (dissoc :tag))))]
+                                           (dissoc :tag :children))))]
                           (on-result combined-activity))))}
                    tag]))
               children)))
