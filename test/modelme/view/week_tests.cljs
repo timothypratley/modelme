@@ -1,8 +1,7 @@
-(ns modelme.view.week-test
+(ns modelme.view.week-tests
   (:require [modelme.view.week :as week]
             [devcards.core :refer-macros [defcard-rg]]
-            [reagent.core :as reagent]
-            [soda-ash.core :as sa]))
+            #_[soda-ash.core :as sa]))
 
 ;; TODO: how to make a permanent modal? that doesn't block the screen
 #_(defcard-rg activity-example

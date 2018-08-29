@@ -1,45 +1,17 @@
 (ns modelme.view.week
-  (:require [modelme.model :as model]
-            [modelme.logic :as logic]
+  (:require [modelme.logic :as logic]
+            [modelme.view.chooser :as chooser]
             [reagent.core :as reagent]
-            [soda-ash.core :as sa]))
-
-(defn activity-choice [time-slot]
-  (reagent/with-let [selection (reagent/atom [])
-                     close (fn close-modal [e]
-                             (reset! selection [])
-                             (reset! time-slot nil))]
-    [sa/Modal {:open (boolean @time-slot)
-               :on-close close
-               :close-icon true}
-     [sa/ModalHeader "Select an activity"
-      (when (seq @selection)
-        [sa/Button
-         {:floated "right"
-          :on-click
-          (fn back-click [e]
-            (swap! selection pop))}
-         "back"])]
-     (into
-       [sa/ModalActions]
-       (let [{:keys [children]} (logic/get-in-activites @selection)]
-         (map-indexed
-           (fn child-action [idx {:keys [tag] :as activity}]
-             [sa/Button
-              {:size "massive"
-               :on-click
-               (fn choice-click [e]
-                 (swap! selection conj idx)
-                 (when (empty? (:children (logic/get-in-activites @selection)))
-                   (model/add-activity! @time-slot activity)
-                   (close)))}
-              tag])
-           children)))]))
+            [soda-ash.core :as sa]
+            [modelme.model :as model]))
 
 (defn week-view [schedule]
-  (reagent/with-let [show-timeslot (reagent/atom nil)]
+  (reagent/with-let [show-timeslot (reagent/atom nil)
+                     on-selection (fn [result]
+                                    (model/add-activity! @show-timeslot result)
+                                    (reset! show-timeslot nil))]
     [:div
-     [activity-choice show-timeslot]
+     [chooser/activity-choice show-timeslot on-selection]
      [sa/Table {:definition true
                 :celled true}
       [sa/TableHeader

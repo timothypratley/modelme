@@ -1,4 +1,4 @@
-(ns modelme.logic-test
+(ns modelme.logic-tests
   (:require [clojure.test :refer [deftest is]]))
 
 (deftest a-logic-test

@@ -1,4 +1,4 @@
-(ns modelme.view.chart-test
+(ns modelme.view.chart-tests
   (:require [modelme.view.chart :as chart]
             [clojure.test :refer [deftest is]]
             [devcards.core :refer-macros [defcard-rg]]))

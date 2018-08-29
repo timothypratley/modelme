@@ -87,37 +87,43 @@
           tree
           idxs))
 
-(defn get-in-activites [idxs]
+(defn get-in-activities [idxs]
   (get-in-tree activities-tree idxs))
 
-(defn update-insulin [{:keys [insulin] :as me} {:keys [insulin-effect]}]
-  (if insulin-effect
-    (update me :insulin + insulin-effect)
-    (cond-> me
-            (pos? insulin) (update me :insulin dec))))
+(defn safe-add [x y]
+  (max 0.0 (+ x y)))
 
-(defn fat-tick [{:keys [insulin] :as me}]
-  (if (pos? insulin)
-    (update me :fat inc)
-    (update me :fat dec)))
+(defn update-nutrients [me {:keys [insulin-effect carb-effect protein-effect fat-effect]}]
+  (-> me
+      (update me :insulin-g safe-add (or insulin-effect -0.5))
+      (update :carbs + (or carb-effect -1.0))
+      (update :proteins + (or protein-effect -1.0))
+      (update :fats + (or fat-effect -1.0))))
+
+(defn update-stress [{:keys [stress-hr] :as me} {:keys [stress-effect]}]
+  (if stress-effect
+    (update me :stress-hr + (or stress-effect -1.0))))
+
+(defn fat-tick [{:keys [insulin-g] :as me}]
+  (if (pos? insulin-g)
+    (update me :fat-kg + 0.1)
+    (update me :fat-kg - 0.1)))
 
 (defn muscle-tick [{:keys [stress] :as me}]
   (if (pos? stress)
-    (update me :muscle inc)
-    (update me :muscle dec)))
+    (update me :muscle-kg + 0.1)
+    (update me :muscle-kg - 0.1)))
 
-(defn calc-schedule [schedule]
+(defn calc-schedule [schedule me]
   (reductions
     (fn simulation-step [me activity]
       (-> me
-          (update-insulin activity)
+          (update :t inc)
+          (update-nutrients activity)
+          (update-stress activity)
           (fat-tick)
-          (muscle-tick)
-          (update :t inc)))
-    {:fat 100
-     :muscle 100
-     :insulin 0
-     :t 0}
+          (muscle-tick)))
+    (assoc me :t 0)
     (for [day days
           hour (range 0 24)]
       (get-in schedule [day hour]))))
