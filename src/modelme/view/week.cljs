@@ -43,10 +43,12 @@
           [sa/TableCell
            (str hour ":00")]
           (doall
-            (for [day logic/days]
+            (for [day logic/days
+                  :let [activity (get-in schedule [day hour])]
+                  :when activity]
               ^{:key (str day hour)}
               [sa/TableCell
                {:on-click
                 (fn hour-click [e]
                   (reset! show-timeslot [day hour]))}
-               [render-activity (get-in schedule [day hour])]]))])]]]))
+               [render-activity activity]]))])]]]))
