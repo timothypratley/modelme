@@ -3,7 +3,21 @@
             [modelme.view.chooser :as chooser]
             [reagent.core :as reagent]
             [soda-ash.core :as sa]
-            [modelme.model :as model]))
+            [modelme.model :as model]
+            [clojure.string :as str]))
+
+;; TODO: sometimes it would be nice to show the parent too
+(defn render-activity [{:keys [tag selected-categories children parent]}]
+  [:span
+   tag
+   [:br]
+   (if selected-categories
+     (str "["
+          (str/join ", "
+                    (for [[k v] selected-categories]
+                      (get-in children [k :children v :tag])))
+          "]")
+     (:tag parent))])
 
 (defn week-view [schedule]
   (reagent/with-let [show-timeslot (reagent/atom nil)
@@ -13,7 +27,8 @@
     [:div
      [chooser/activity-choice show-timeslot on-selection]
      [sa/Table {:definition true
-                :celled true}
+                :celled true
+                :fixed true}
       [sa/TableHeader
        [sa/TableRow
         [sa/TableHeaderCell]
@@ -34,4 +49,4 @@
                {:on-click
                 (fn hour-click [e]
                   (reset! show-timeslot [day hour]))}
-               (get-in schedule [day hour :tag])]))])]]]))
+               [render-activity (get-in schedule [day hour])]]))])]]]))

@@ -2,15 +2,23 @@
   (:require [modelme.view.chart :as chart]
             [modelme.model :as model]))
 
-(def line-plot
-  {:data {:values (model/calc-schedule)}
-   :encoding {:x {:field "t"}
-              :y {:field "fat"}
-              :color {:field "col" :type "nominal"}}
-   :mark "line"})
+(defn group-data [schedule]
+  (vec
+    (for [k [:fat-kg :muscle-kg :weight-kg :insulin-g]
+          m schedule]
+      {:x (:t m) :y (get m k) :col k})))
 
-(prn
-  (model/calc-schedule))
+;; TODO: timeseries multiple values, is there a vega way?
+;; (avoid reshaping with group-data)
+
+(def line-plot
+  {:data {:values (group-data (model/calc-schedule))}
+   :encoding {:x {:field "x" :type "quantitative"}
+              :y {:field "y" :type "quantitative"}
+              :color {:field "col" :type "nominal"}}
+   :mark "line"
+   ;; TODO: I just want it big, is there a large?
+   :width "500"})
 
 (defn projection-view []
   [chart/vega-lite line-plot])

@@ -6,7 +6,7 @@
 
 (defn choose-between
   "Making a choice may open up further sub-choices, or reach a leaf choice."
-  [children selection on-result]
+  [{:keys [children] :as parent} selection on-result]
   (into
     [sa/ModalActions]
     (map-indexed
@@ -17,7 +17,7 @@
           (fn choice-click [e]
             (swap! selection conj idx)
             (when (empty? (:children (logic/get-in-activities @selection)))
-              (on-result activity)))}
+              (on-result (assoc activity :parent parent))))}
          tag])
       children)))
 
@@ -78,6 +78,8 @@
               children)))
         children))))
 
+;; TODO: handle quantities
+
 (defn activity-choice
   "Presents a tree of options as a series of dialogs, the user follows a branch to a leaf."
   [time-slot on-result]
@@ -98,7 +100,7 @@
             (swap! selection pop))}
          "back"])]
      ;; TODO: pass in the activity tree... where does get-in-activities belong?
-     (let [{:keys [children logical] :as activity} (logic/get-in-activities @selection)]
+     (let [{:keys [logical] :as activity} (logic/get-in-activities @selection)]
        (if (= logical :and)
          [choose-all activity close]
-         [choose-between children selection close]))]))
+         [choose-between activity selection close]))]))

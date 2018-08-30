@@ -13,7 +13,8 @@
            opts {:renderer "canvas"
                  :mode "vega-lite"}]
        (-> (js/vegaEmbed elem spec (clj->js opts))
-           (.then (fn [res]
+           ;; TODO: fix tooltip syntax
+           #_(.then (fn [res]
                     (js/vegaTooltip.vegaLite (.-view res) spec)))
            (.catch println))))))
 
@@ -30,4 +31,4 @@
        (render-vega-lite new-spec (reagent/dom-node this)))
      :reagent-render
      (fn vega-lite-render [spec]
-       [:div#vis])}))
+       [:div])}))

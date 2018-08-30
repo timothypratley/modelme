@@ -11,45 +11,64 @@
    ["Meal"
     {:logical :and}
     ["Size"
-     ["Light" {}]
-     ["Medium" {}]
-     ["Heavy" {}]]
+     ["Light" {:insulin-effect 1}]
+     ["Medium" {:insulin-effect 2}]
+     ["Heavy" {:insulin-effect 3}]]
     ["Composition"
-     ["Carbohydrate" {}]
-     ["Protein" {}]
-     ["Ballanced" {}]]]
+     ["Carbs" {:insulin-effect 3
+               :carb-effect 5}]
+     ["Protein" {:protein-effect 4
+                 :fat-effect 1}]
+     ["Balanced" {:carb-effect 2
+                  :protein-effect 2
+                  :fat-effect 1}]]]
    ["Drink"
     ["Soda" {:quantity 5}]
     ["Coffee"
      ["Black" {}]
-     ["Cream" {}]
-     ["Sugar" {}]
-     ["Sugar and Cream" {}]]
+     ["Cream" {:fat-effect 1}]
+     ["Sugar" {:insulin-effect 2}]
+     ["Sugar and Cream" {:fat-effect 1
+                         :insulin-effect 2}]]
     ["Smoothie"
-     ["Protein" {}]
-     ["Sweet" {}]
-     ["Blend" {}]]
+     ["Protein" {:protein-effect 2}]
+     ["Sweet" {:carb-effect 2
+               :insulin-effect 3}]
+     ["Blend" {:carb-effect 1
+               :protein-effect 1
+               :insulin-effect 1}]]
     ["Alcohol"
      ["Beer"
-      ["Lite" {:quantity 5}]
-      ["Full" {:quantity 5}]]
-     ["Wine" {:quantity 5}]
-     ["Spirits" {:quantity 5}]]]
+      ["Lite" {:quantity 5
+               :carb-effect 1
+               :insulin-effect 1}]
+      ["Full" {:quantity 5
+               :carb-effect 2}]]
+     ["Wine" {:quantity 5
+              :insulin-effect 2
+              :carb-effect 1}]
+     ["Spirits" {:quantity 5
+                 :insulin-effect 1}]]]
    ["Snack"
-    ["Apple" {}]
-    ["Chocolate" {}]
-    ["Chips" {}]
-    ["Bakery" {}]]
+    ["Apple" {:carb-effect 1
+              :insulin-effect 1}]
+    ["Chocolate" {:carb-effect 1
+                  :fat-effect 1
+                  :insulin-effect 1}]
+    ["Chips" {:carb-effect 1
+              :insulin-effect 1
+              :salt-effect 1}]
+    ["Bakery" {:carb-effect 2
+               :insluin-effect 1}]]
    ["Workout"
-    ["Cardio" {}]
-    ["Weights" {}]
-    ["Sport" {}]
-    ["Walk" {}]]
+    ["Cardio" {:stress-effect 48}]
+    ["Weights" {:stress-effect 72}]
+    ["Sport" {:stress-effect 24}]]
    ["Incidental"
-    ["Walking" {}]
-    ["Stairs" {}]
-    ["Yoga" {}]
-    ["Cycling" {}]]])
+    ["Walking" {:stress-effect 12}]
+    ["Stairs" {:stress-effect 4}]
+    ["Yoga" {:stress-effect 8}]
+    ["Cycling" {:stress-effect 24}]]])
 
 (defn index-by [k xs]
   (into {}
@@ -93,26 +112,23 @@
 (defn safe-add [x y]
   (max 0.0 (+ x y)))
 
-(defn update-nutrients [me {:keys [insulin-effect carb-effect protein-effect fat-effect]}]
+(defn update-nutrients [me {:keys [insulin-effect carb-effect protein-effect fat-effect stress-effect]}]
   (-> me
-      (update :insulin-g safe-add (or insulin-effect -0.5))
-      (update :carbs + (or carb-effect -1.0))
-      (update :proteins + (or protein-effect -1.0))
-      (update :fats + (or fat-effect -1.0))))
-
-(defn update-stress [{:keys [stress-hr] :as me} {:keys [stress-effect]}]
-  (if stress-effect
-    (update me :stress-hr + (or stress-effect -1.0))))
+      (update :insulin-g safe-add (or insulin-effect -0.1))
+      (update :ready-carbs-kg safe-add (or carb-effect -1.0))
+      (update :ready-proteins-kg safe-add (or protein-effect -1.0))
+      (update :ready-fats-kg safe-add (or fat-effect -1.0))
+      (update :stress-hr safe-add (or stress-effect -1.0))))
 
 (defn fat-tick [{:keys [insulin-g] :as me}]
   (if (pos? insulin-g)
-    (update me :fat-kg + 0.1)
-    (update me :fat-kg - 0.1)))
+    (update me :fat-kg safe-add 0.1)
+    (update me :fat-kg safe-add -0.1)))
 
-(defn muscle-tick [{:keys [stress] :as me}]
-  (if (pos? stress)
-    (update me :muscle-kg + 0.1)
-    (update me :muscle-kg - 0.1)))
+(defn muscle-tick [{:keys [stress-hr] :as me}]
+  (if (pos? stress-hr)
+    (update me :muscle-kg safe-add 0.1)
+    (update me :muscle-kg safe-add -0.1)))
 
 (defn calc-schedule [schedule me]
   (reductions
@@ -120,7 +136,6 @@
       (-> me
           (update :t inc)
           (update-nutrients activity)
-          (update-stress activity)
           (fat-tick)
           (muscle-tick)))
     (assoc me :t 0)
