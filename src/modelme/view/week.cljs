@@ -37,18 +37,19 @@
             ^{:key day}
             [sa/TableHeaderCell day]))]]
       [sa/TableBody
-       (for [hour logic/hours]
-         ^{:key hour}
-         [sa/TableRow
-          [sa/TableCell
-           (str hour ":00")]
-          (doall
-            (for [day logic/days
-                  :let [activity (get-in schedule [day hour])]
-                  :when activity]
-              ^{:key (str day hour)}
-              [sa/TableCell
-               {:on-click
-                (fn hour-click [e]
-                  (reset! show-timeslot [day hour]))}
-               [render-activity activity]]))])]]]))
+       (doall
+         (for [hour logic/hours]
+           ^{:key hour}
+           [sa/TableRow
+            [sa/TableCell
+             (str hour ":00")]
+            (doall
+              (for [day logic/days
+                    :let [activity (get-in schedule [day hour])]]
+                ^{:key (str day hour)}
+                [sa/TableCell
+                 {:on-click
+                  (fn hour-click [e]
+                    (reset! show-timeslot [day hour]))}
+                 (when activity
+                   [render-activity activity])]))]))]]]))

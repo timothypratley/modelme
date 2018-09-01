@@ -31,11 +31,22 @@
                            :main modelme.app
                            :optimizations :advanced
                            :infer-externs true
-                           :pretty-print false}}}}
+                           :pretty-print false}}
+
+               ;; TODO: I would like to remove this build in favour of multiple mains in dev.cljs.edn
+               "test"
+               {:source-paths ["test" "src"]
+                :compiler {:main modelme.test-runner
+                           :optimizations :advanced
+                           :output-to "resources/public/js/compiled/test.js"
+                           :output-dir "resources/public/js/compiled/out/test"
+                           :asset-path "js/compiled/out/test"
+                           :source-map-timestamp true
+                           :preloads [devtools.preload]}}}}
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" :target-path]
 
-  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.1.8-SNAPSHOT"]
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.1.8"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]
                                   [binaryage/devtools "0.9.10"]
                                   [devcards "0.2.5"]

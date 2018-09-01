@@ -1,5 +1,5 @@
 {:main modelme.app
- :extra-main-files {:tests {:main modelme.test-runner}
+ :extra-main-files {:test {:main modelme.test-runner}
                     :devcards {:main modelme.devcards}}
  :optimizations :none
  :output-to "resources/public/js/compiled/dev.js"

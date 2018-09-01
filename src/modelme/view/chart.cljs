@@ -14,8 +14,8 @@
                  :mode "vega-lite"}]
        (-> (js/vegaEmbed elem spec (clj->js opts))
            ;; TODO: fix tooltip syntax
-           #_(.then (fn [res]
-                    (js/vegaTooltip.vegaLite (.-view res) spec)))
+           (.then (fn [res]
+                    (. js/vegaTooltip (vegaLite (.-view res) spec))))
            (.catch println))))))
 
 (defn vega-lite
