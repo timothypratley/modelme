@@ -7,4 +7,4 @@
   [sa/Container
    [sa/Header {:as "h2"} "Model me"]
    [week/week-view (:schedule @app-state)]
-   [projection/projection-view]])
+   [projection/projection-view @app-state]])

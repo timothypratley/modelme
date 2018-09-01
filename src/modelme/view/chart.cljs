@@ -2,10 +2,8 @@
   (:require [reagent.core :as reagent]
             [cljsjs.vega]
             [cljsjs.vega-lite]
-            [cljsjs.vega-embed]
-            [cljsjs.vega-tooltip]))
+            [cljsjs.vega-embed]))
 
-;; TODO: fix interop advanced mode
 (defn render-vega-lite
   ([spec elem]
    (when spec
@@ -13,9 +11,6 @@
            opts {:renderer "canvas"
                  :mode "vega-lite"}]
        (-> (js/vegaEmbed elem spec (clj->js opts))
-           ;; TODO: fix tooltip syntax
-           (.then (fn [res]
-                    (. js/vegaTooltip (vegaLite (.-view res) spec))))
            (.catch println))))))
 
 (defn vega-lite
