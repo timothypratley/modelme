@@ -12,7 +12,16 @@
                  :schedule {}}))
 
 (defn add-activity! [[day hour] activity]
-  (swap! app-state assoc-in [:schedule day hour] activity))
+  (swap! app-state update :schedule logic/add-activity day hour activity))
 
-(defn calc-schedule []
-  (logic/calc-schedule (:schedule @app-state) (:me @app-state)))
+(defn remove-activity! [[day hour]]
+  (swap! app-state update :schedule logic/remove-activity day hour))
+
+(defn copy-activity! [[day hour] [to-day to-hour]]
+  (swap! app-state update :schedule logic/copy-activity day hour to-day to-hour))
+
+(defn swap-activity! [[from-day from-hour] [to-day to-hour]]
+  (swap! app-state update :schedule logic/swap-activity from-day from-hour to-day to-hour))
+
+(defn move-activity! [[from-day from-hour] [to-day to-hour]]
+  (swap! app-state update :schedule logic/move-activity from-day from-hour to-day to-hour))

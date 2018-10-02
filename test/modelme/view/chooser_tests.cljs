@@ -16,7 +16,7 @@
                      time-slot (reagent/atom [0 0])
                      on-result (fn mock-close [result]
                                  (js/alert (str "Got:" result)))]
-    [chooser/choose-all activity time-slot on-result]))
+    [chooser/choose-all-from-category activity time-slot on-result]))
 
 (defcard-rg activity-choice-example
   (reagent/with-let [time-slot (reagent/atom [0 0])]

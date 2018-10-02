@@ -24,4 +24,5 @@
    :width "500"})
 
 (defn projection-view [{:keys [schedule me]}]
-  [chart/vega-lite (line-plot (group-data (logic/calc-schedule schedule me)))])
+  [chart/vega-lite (line-plot (group-data
+                                (logic/calc-schedule schedule me)))])

@@ -31,7 +31,7 @@
                               {:a a
                                :b b}))))
 
-(defn choose-all
+(defn choose-all-from-category
   "User needs to select multiple options that describe the activity before proceeding.
   Must be a leaf choice, as further navigation is blocked.
   Each child of the activity is considered a category.
@@ -102,5 +102,5 @@
      ;; TODO: pass in the activity tree... where does get-in-activities belong?
      (let [{:keys [logical] :as activity} (logic/get-in-activities @selection)]
        (if (= logical :and)
-         [choose-all activity close]
+         [choose-all-from-category activity close]
          [choose-between activity selection close]))]))

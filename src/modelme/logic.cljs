@@ -142,3 +142,26 @@
     (for [day days
           hour (range 0 24)]
       (get-in schedule [day hour]))))
+
+(defn add-activity [schedule day hour activity]
+  (assoc-in schedule [day hour] activity))
+
+(defn remove-activity [schedule day hour]
+  (update-in schedule [day] dissoc hour))
+
+(defn swap-activity [schedule from-day from-hour to-day to-hour]
+  (let [a (get-in schedule [from-day from-hour])
+        b (get-in schedule [to-day to-hour])]
+    (-> schedule
+        (assoc-in [from-day from-hour] b)
+        (assoc-in [to-day to-hour] a))))
+
+(defn move-activity [schedule from-day from-hour to-day to-hour]
+  (let [activity (get-in schedule [from-day from-hour])]
+    (-> schedule
+        (assoc-in [to-day to-hour] activity)
+        (update-in [from-day] dissoc from-hour))))
+
+(defn copy-activity [schedule from-day from-hour to-day to-hour]
+  (let [activity (get-in schedule [from-day from-hour])]
+    (assoc-in schedule [to-day to-hour] activity)))
