@@ -1,3 +1,4 @@
+^{:open-url "http://localhost:9500/dev.html"}
 {:main modelme.app
  :extra-main-files {:test {:main modelme.test-runner}
                     :devcards {:main modelme.devcards}}

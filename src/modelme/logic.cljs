@@ -149,12 +149,17 @@
 (defn remove-activity [schedule day hour]
   (update-in schedule [day] dissoc hour))
 
+(defn assoc-in-dissoc-out [m ks v]
+  (if v
+    (assoc-in m ks v)
+    (update-in m (butlast ks) dissoc (last ks))))
+
 (defn swap-activity [schedule from-day from-hour to-day to-hour]
   (let [a (get-in schedule [from-day from-hour])
         b (get-in schedule [to-day to-hour])]
     (-> schedule
-        (assoc-in [from-day from-hour] b)
-        (assoc-in [to-day to-hour] a))))
+        (assoc-in-dissoc-out [from-day from-hour] b)
+        (assoc-in-dissoc-out [to-day to-hour] a))))
 
 (defn move-activity [schedule from-day from-hour to-day to-hour]
   (let [activity (get-in schedule [from-day from-hour])]
